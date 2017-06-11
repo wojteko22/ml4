@@ -8,7 +8,6 @@
 
 import pickle as pkl
 import numpy as np
-import main as base
 
 
 def predict(x):
@@ -18,29 +17,69 @@ def predict(x):
     :param x: macierz o wymiarach NxD
     :return: wektor o wymiarach Nx1
     """
-    coefs, inter, classes, activation = base.load_model('modelek2.pkl') # activation wywalić, rel najlepszy
-    # http://scikit-learn.org/stable/modules/neural_networks_supervised.html
-    # 1.17.7
-    # coefs[0] to ponoć W1, coefs[1], to W2 itd., można to w pętli dać, albo na stałe, tyle ile mamy warst sieci
-    # intercepts[0] to ponoć b1, intercepts[1], to b2 itd., można to w pętli dać, albo na stałe, tyle ile mamy warst sieci
-    # wynik ostateczny to classes[wynik_nieostateczny]
 
-    # w sumie potrzebne funkcje są chyba pod spodem, a Wątroba kazał mi to samemu robić :P
-
-    # coefs, inter
     # for i in x:
-    #
-    #     y= base.hog(x.reshape(56,56))
+    #     y= hog(x.reshape(56,56))
 
-        # for co in coefs:
-    x2 = base.get_hog_features(list(map(lambda i: i.reshape(56, 56), x)))
-    return predict_all(x2, 'modelek2.pkl')
+    def simple_predict(x):
+        x = prepare_one_dimen_array(x)
+        for i in range(len(W)):
+            x = W[i] @ x + b[i]
+            if i != len(coefs) - 1:
+                x = relu(x)
+        return classes[np.argmax(x)]
+
+    x2 = get_hog_features(list(map(lambda i: i.reshape(56, 56), x)))
+    coefs, intercepts, classes = load_model('modelek2.pkl')
+    W = transpose_all_elements_in_fst_level_ndarray(coefs)
+    b = prepare_list_one_dimen_array(intercepts)
+    return np.array(list(map(lambda i: np.array([simple_predict(i)]), x2)))
 
 
+def get_hog_features(x):
+    return np.array(list(map(lambda y: hog(y).flatten(), x)))
 
 
-ACTIVATIONS = {'identity': lambda x: x, 'tanh': np.tanh, 'logistic': base.sigmoid,
-               'relu': base.relu, 'softmax': base.softmax}
+def hog(image):
+    nwin_x = 5
+    nwin_y = 5  # podział obrazka
+    B = 7  # liczba kierunków
+    (L, C) = np.shape(image)
+    H = np.zeros(shape=(nwin_x * nwin_y * B, 1))
+    m = np.sqrt(L / 2.0)
+    if C is 1:
+        raise NotImplementedError
+    step_x = np.floor(C / (nwin_x + 1))
+    step_y = np.floor(L / (nwin_y + 1))
+    cont = 0
+    hx = np.array([[1, 0, -1]])
+    hy = np.array([[-1], [0], [1]])
+    hxy = np.array([1, 0, -1])
+    grad_xr = np.convolve(image.flatten(), hxy, mode='same').reshape(56, 56)
+    grad_yu = np.convolve(image.T.flatten(), hxy, mode='same').reshape(56, 56).T
+    angles = np.arctan2(grad_yu, grad_xr)
+    magnit = np.sqrt((grad_yu ** 2 + grad_xr ** 2))
+    print('\n')
+    for n in range(nwin_y):
+        for m in range(nwin_x):
+            cont += 1
+            angles2 = angles[int(n * step_y):int((n + 2) * step_y), int(m * step_x):int((m + 2) * step_x)]
+            magnit2 = magnit[int(n * step_y):int((n + 2) * step_y), int(m * step_x):int((m + 2) * step_x)]
+            v_angles = angles2.ravel()
+            v_magnit = magnit2.ravel()
+            K = np.shape(v_angles)[0]
+            bin = 0
+            H2 = np.zeros(shape=(B, 1))
+            for ang_lim in np.arange(start=-np.pi + 2 * np.pi / B, stop=np.pi + 2 * np.pi / B, step=2 * np.pi / B):
+                for k in range(K):
+                    if v_angles[k] < ang_lim:
+                        v_angles[k] = 100
+                        H2[bin] += v_magnit[k]
+                bin += 1
+
+            H2 = H2 / (np.linalg.norm(H2) + 0.01)
+            H[(cont - 1) * B:cont * B] = H2
+    return H
 
 
 def transpose_all_elements_in_fst_level_ndarray(array):
@@ -48,41 +87,23 @@ def transpose_all_elements_in_fst_level_ndarray(array):
 
 
 def prepare_list_one_dimen_array(array):
-    return np.array(list(map(lambda x: base.prepare_one_dimen_array(x), array)))
+    return np.array(list(map(lambda x: prepare_one_dimen_array(x), array)))
 
 
-# noinspection PyTypeChecker
-def simple_predict(x):
-    x = base.prepare_one_dimen_array(x)
-    for i in range(len(_weights)):
-        x = _weights[i] @ x + _bias[i]
-        if i != len(_weights) - 1:
-            x = _activation_function(x)
-
-    return _classes[np.argmax(x)]
+def prepare_one_dimen_array(x):
+    return np.array(list(map(lambda y: np.array([y]), x)))
 
 
-def predict_all(x, model_file_name):
-    global _weights
-    global _bias
-    global _classes
-    global _activation_function
-
-    _weights, _bias, _classes, _activation_function = base.load_model(model_file_name)
-    _activation_function = ACTIVATIONS[_activation_function]
-
-    _weights = transpose_all_elements_in_fst_level_ndarray(_weights)
-    _bias = prepare_list_one_dimen_array(_bias)
-
-    return np.array(list(map(lambda i: np.array([simple_predict(i)]), x)))
+def relu(X):
+    np.clip(X, 0, np.finfo(X.dtype).max, out=X)
+    return X
 
 
-def celina():
-    data = base.load_main_data()
-    x = data[0][:50]
-    y = data[1][:50]
-    result = predict(x)
-    print(base.check_prediction(result, y))
+def load_model(file_name):
+    model = load_data(file_name)
+    return model['coefs'], model['intercepts'], model['classes']
 
 
-celina()
+def load_data(file_name):
+    with open(file_name, 'rb') as f:
+        return pkl.load(f)

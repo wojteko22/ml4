@@ -77,14 +77,14 @@ def sigmoid(x):
     return np.divide(1, np.add(1, np.exp(-x)))
 
 
-def relu(x):
+def relu(X):
     """
     Oblicza relu dla tablicy Nx1 lub N
     :param x: wektor wejsciowych wartosci Nx1 lub N
     :return: wektor wyjściowych wartości funkcji relu dla wejścia x, Nx1 lub N
     """
-    np.clip(x, 0, np.finfo(x.dtype).max, out=x)
-    return x
+    np.clip(X, 0, np.finfo(X.dtype).max, out=X)
+    return X
 
 
 def check_prediction(result_to_chech, y_true):
