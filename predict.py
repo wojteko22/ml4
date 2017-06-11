@@ -28,15 +28,14 @@ def predict(x):
     # w sumie potrzebne funkcje są chyba pod spodem, a Wątroba kazał mi to samemu robić :P
 
     # coefs, inter
-    for i in x:
-
-        y= base.hog(x.reshape(56,56))
+    # for i in x:
+    #
+    #     y= base.hog(x.reshape(56,56))
 
         # for co in coefs:
+    x2 = base.get_hog_features(list(map(lambda i: i.reshape(56, 56), x)))
+    return predict_all(x2, 'modelek2.pkl')
 
-
-
-    pass
 
 
 
@@ -76,3 +75,14 @@ def predict_all(x, model_file_name):
     _bias = prepare_list_one_dimen_array(_bias)
 
     return np.array(list(map(lambda i: np.array([simple_predict(i)]), x)))
+
+
+def celina():
+    data = base.load_main_data()
+    x = data[0][:50]
+    y = data[1][:50]
+    result = predict(x)
+    print(base.check_prediction(result, y))
+
+
+celina()
