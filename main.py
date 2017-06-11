@@ -158,13 +158,8 @@ def hog(image):
     return H
 
 
-def aaa():
+def ania():
     data = load_main_data()
-    x = data[0]    #todo: wywalić 50
+    x = data[0]
     hog = get_hog_features(list(map(lambda i: i.reshape(56, 56), x)))
-    save_data((hog, data[1]), 'plik.pkl') #todo: wywalić 50
-
-
-
-# aaa()
-print(load_main_data()[0])
+    save_data((hog, data[1]), 'plik.pkl')
