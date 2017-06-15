@@ -7,7 +7,7 @@ def learn_model(x_train_features, y_train, x_val_features, y_val):
     classifier = MLPClassifier(solver='sgd', hidden_layer_sizes=88, max_iter=1, warm_start=True, batch_size=40)
     record = 0.925
     record_index = 0
-    for i in range(1, 500):
+    for i in range(1, 1000):
         classifier.fit(x_train_features, y_train)
         W, b, classes = classifier.coefs_, classifier.intercepts_, classifier.classes_
         result_y = p.predict_with_model_params(x_val_features, W, b, classes)
@@ -28,5 +28,5 @@ def learn_model(x_train_features, y_train, x_val_features, y_val):
 
 
 data = u.read_file('plik.pkl')
-parting = 21601
+parting = 22601
 learn_model(data[0][:parting], data[1][:parting].ravel(), data[0][parting:], data[1][parting:])

@@ -23,7 +23,7 @@ def predict(x):
 
 def hog_all(x):
     images = list(map(lambda xi: xi.reshape(56, 56), x))
-    return list(map(lambda image: hog(image).flatten(), images))
+    return list(map(lambda image: hog(image).ravel(), images))
 
 
 def hog(image):
@@ -37,9 +37,9 @@ def hog(image):
     step_x = np.floor(C / (nwin_x + 1))
     step_y = np.floor(L / (nwin_y + 1))
     cont = 0
-    hxy = np.array([1, 0, -1])
-    grad_xr = np.convolve(image.flatten(), hxy, mode='same').reshape(56, 56)
-    grad_yu = np.convolve(image.T.flatten(), hxy, mode='same').reshape(56, 56).T
+    hxy = [1, 0, -1]
+    grad_xr = np.convolve(image.ravel(), hxy, mode='same').reshape(56, 56)
+    grad_yu = np.convolve(image.T.ravel(), hxy, mode='same').reshape(56, 56).T
     angles = np.arctan2(grad_yu, grad_xr)
     magnit = np.sqrt((grad_yu ** 2 + grad_xr ** 2))
     for n in range(nwin_y):
