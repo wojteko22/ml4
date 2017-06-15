@@ -1,7 +1,7 @@
 import main as m
 import predict as p
 
-dimen = 50
+dimen = 101
 
 
 def celina():

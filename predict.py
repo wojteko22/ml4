@@ -17,24 +17,9 @@ def predict(x):
     :param x: macierz o wymiarach NxD
     :return: wektor o wymiarach Nx1
     """
-    def predict_for_single(xi):
-        steps = len(W) - 1
-        for i in range(steps):
-            xi = relu(W[i].T @ xi + b[i])
-        xi = W[steps].T @ xi + b[steps]
-        return classes[np.argmax(xi)]
-
     reshaped_x = list(map(lambda xi: xi.reshape(56, 56), x))
     hogged_x = list(map(lambda xi: hog(xi).flatten(), reshaped_x))
-    model = read_file('model.pkl')
-    W, b, classes = model['coefs'], model['intercepts'], model['classes']
-    result = list(map(lambda xi: [predict_for_single(xi)], hogged_x))
-    return np.array(result)
-
-
-def relu(X):
-    np.clip(X, 0, np.finfo(X.dtype).max, out=X)
-    return X
+    return predict_after_extraction(hogged_x)
 
 
 def hog(image):
@@ -75,6 +60,28 @@ def hog(image):
     return H
 
 
+def predict_after_extraction(x_features):
+    model = read_file('model.pkl')
+    return predict_with_model_params(x_features, model['W'], model['b'], model['classes'])
+
+
 def read_file(file_name):
     with open(file_name, 'rb') as f:
         return pkl.load(f)
+
+
+def predict_with_model_params(x_features, W, b, classes):
+    def predict_for_single(xi):
+        steps = len(W) - 1
+        for i in range(steps):
+            xi = relu(W[i].T @ xi + b[i])
+        xi = W[steps].T @ xi + b[steps]
+        return classes[np.argmax(xi)]
+
+    result = list(map(lambda xi: [predict_for_single(xi)], x_features))
+    return np.array(result)
+
+
+def relu(X):
+    np.clip(X, 0, np.finfo(X.dtype).max, out=X)
+    return X

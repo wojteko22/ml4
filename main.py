@@ -4,10 +4,10 @@ import predict as p
 
 
 def load_main_data():
-    return load_data('train.pkl')
+    return read_file('train.pkl')
 
 
-def load_data(file_name):
+def read_file(file_name):
     with open(file_name, 'rb') as f:
         return pkl.load(f)
 
