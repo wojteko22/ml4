@@ -17,18 +17,19 @@ def predict(x):
     :param x: macierz o wymiarach NxD
     :return: wektor o wymiarach Nx1
     """
-    def predict_for_single(x):
-        for i in range(len(W)):
-            x = W[i].T @ x + b[i]
-            if i != len(W) - 1:
-                x = relu(x)
-        return classes[np.argmax(x)]
+    def predict_for_single(xi):
+        steps = len(W) - 1
+        for i in range(steps):
+            xi = relu(W[i].T @ xi + b[i])
+        xi = W[steps].T @ xi + b[steps]
+        return classes[np.argmax(xi)]
 
     reshaped_x = list(map(lambda xi: xi.reshape(56, 56), x))
     hogged_x = list(map(lambda xi: hog(xi).flatten(), reshaped_x))
     model = read_file('model.pkl')
     W, b, classes = model['coefs'], model['intercepts'], model['classes']
-    return list(map(lambda xi: [predict_for_single(xi)], hogged_x))
+    result = list(map(lambda xi: [predict_for_single(xi)], hogged_x))
+    return np.array(result)
 
 
 def relu(X):

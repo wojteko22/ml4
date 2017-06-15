@@ -87,21 +87,6 @@ def relu(X):
     return X
 
 
-def check_prediction(result_to_chech, y_true):
-    """
-
-    :param result_to_chech:
-    :param y_true:
-    :return:
-    """
-    error_count = 0
-    for i in range(result_to_chech.shape[0]):
-        if result_to_chech[i][0] == y_true[i][0]:
-            error_count += 1
-
-    return error_count * 1.0 / result_to_chech.shape[0]
-
-
 def prepare_one_dimen_array(x):
     """
     Funkcja opakowuje listę, ndarray w w głąb
@@ -156,6 +141,15 @@ def hog(image):
             H2 = H2 / (np.linalg.norm(H2) + 0.01)
             H[(cont - 1) * B:cont * B] = H2
     return H
+
+
+def check_prediction(result_y, real_y):
+    good_count = 0
+    size = result_y.shape[0]
+    for i in range(size):
+        if result_y[i][0] == real_y[i][0]:
+            good_count += 1
+    return good_count * 1.0 / size
 
 
 def ania():
