@@ -1,6 +1,7 @@
-import main as m
+import utils as m
+import predict as p
 
-data = m.load_main_data()
+data = m.read_train_file()
 x = data[0]
-hog = m.get_hog_features(list(map(lambda i: i.reshape(56, 56), x)))
-m.save_data((hog, data[1]), 'plik.pkl')
+y = data[1]
+m.save_data((p.hog_all(x), y), 'plik.pkl')

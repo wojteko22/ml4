@@ -17,9 +17,13 @@ def predict(x):
     :param x: macierz o wymiarach NxD
     :return: wektor o wymiarach Nx1
     """
-    reshaped_x = list(map(lambda xi: xi.reshape(56, 56), x))
-    hogged_x = list(map(lambda xi: hog(xi).flatten(), reshaped_x))
+    hogged_x = hog_all(x)
     return predict_after_extraction(hogged_x)
+
+
+def hog_all(x):
+    images = list(map(lambda xi: xi.reshape(56, 56), x))
+    return list(map(lambda image: hog(image).flatten(), images))
 
 
 def hog(image):

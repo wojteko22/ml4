@@ -1,9 +1,7 @@
-import numpy as np
 import pickle as pkl
-import predict as p
 
 
-def load_main_data():
+def read_train_file():
     return read_file('train.pkl')
 
 
@@ -15,10 +13,6 @@ def read_file(file_name):
 def save_data(data, file_name):
     output = open(file_name, 'wb')
     pkl.dump(data, output)
-
-
-def get_hog_features(x):
-    return np.array(list(map(lambda y: p.hog(y).flatten(), x)))
 
 
 def check_prediction(result_y, real_y):

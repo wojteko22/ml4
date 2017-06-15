@@ -1,17 +1,14 @@
-import main as m
+import utils as u
 import predict as p
+
 
 dimen = 101
 
 
-def celina():
-    data = m.load_main_data()
-    x = data[0][:dimen]
-    y = data[1][:dimen]
-    result = p.predict(x)
-    if result.shape != (dimen, 1):
-        print("Error!")
-    print(m.check_prediction(result, y))
-
-
-celina()
+data = u.read_train_file()
+x = data[0][:dimen]
+y = data[1][:dimen]
+result = p.predict(x)
+if result.shape != (dimen, 1):
+    print("Error!")
+print(u.check_prediction(result, y))
