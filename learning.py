@@ -4,10 +4,10 @@ from sklearn.neural_network import MLPClassifier
 
 
 def learn_model(x_train_features, y_train, x_val_features, y_val):
-    classifier = MLPClassifier(hidden_layer_sizes=88, max_iter=6, warm_start=True, batch_size=40)   # 40 naj
-    record = 0.93
+    classifier = MLPClassifier(solver='sgd', hidden_layer_sizes=88, max_iter=1, warm_start=True, batch_size=40)   # 40 naj
+    record = 0.9317
     record_index = 0
-    for i in range(1, 100):
+    for i in range(1, 500):
         classifier.fit(x_train_features, y_train)
         W, b, classes = classifier.coefs_, classifier.intercepts_, classifier.classes_
         result_y = p.predict_with_model_params(x_val_features, W, b, classes)
@@ -21,9 +21,9 @@ def learn_model(x_train_features, y_train, x_val_features, y_val):
                     'b': b,
                     'classes': classes
                 }, 'models/' + str(i) + '_' + str(result) + '.pkl')
-            print(str(i) + ':\t', result)
+            print('\n', i, result, sep='---')
         else:
-            print(result, end=" ", flush=True)
+            print(i, result, sep='_', end=" ", flush=True)
     print(record_index, '=', record)
 
 
