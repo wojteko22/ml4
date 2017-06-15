@@ -4,7 +4,7 @@ from sklearn.neural_network import MLPClassifier
 
 
 def learn_model(x_train_features, y_train, x_val_features, y_val):
-    classifier = MLPClassifier(solver='sgd', hidden_layer_sizes=88, max_iter=1, warm_start=True, batch_size=40)   # 40 naj
+    classifier = MLPClassifier(solver='sgd', hidden_layer_sizes=88, max_iter=1, warm_start=True, batch_size=40)
     record = 0.9317
     record_index = 0
     for i in range(1, 500):
