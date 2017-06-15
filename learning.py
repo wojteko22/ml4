@@ -10,7 +10,7 @@ def learn_model(x_train_features, y_train, x_val_features, y_val):
                                warm_start=True, batch_size=200)  # todo: zmienić batcha
     record = 0
     record_index = 0
-    for i in range(1, 5):
+    for i in range(1, 100):
         classifier.fit(x_train_features, y_train)
         W, b, classes = classifier.coefs_, classifier.intercepts_, classifier.classes_
         result_y = p.predict_with_model_params(x_val_features, W, b, classes)
@@ -19,13 +19,13 @@ def learn_model(x_train_features, y_train, x_val_features, y_val):
         if result > record:
             record = result
             record_index = i
-        print(i, ':\t', result)
-        u.save_data(
-            {
-                'W': W,
-                'b': b,
-                'classes': classes
-            }, 'models/' + str(i) + '_' + str(result) + '.pkl')
+            u.save_data(
+                {
+                    'W': W,
+                    'b': b,
+                    'classes': classes
+                }, 'models/' + str(i) + '_' + str(result) + '.pkl')
+            print(str(i) + ':\t', result)
     print(record_index, '=', record)
 
 
